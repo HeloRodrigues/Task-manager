@@ -1,15 +1,21 @@
 //CRUD -> create, read, update, delete
-
 import pkg from "pg";
+import "dotenv/config";
 
 const { Pool } = pkg;
 
+const userName = process.env.USER_NAME;
+const hostName = process.env.HOST;
+const port = process.env.PORT;
+const password = process.env.PASSWORD;
+const dbName = process.env.DATABASE;
+
 const config = {
-  user: "postgres",
-  host: "localhost",
-  port: 5432,
-  password: "har100892",
-  database: "task-manager",
+  user: userName,
+  host: hostName,
+  port: port,
+  password: password,
+  database: dbName,
 };
 
 const pool = new Pool(config);
@@ -54,31 +60,27 @@ export const createTask = (body) => {
   });
 };
 
-export const deleteTask = (task_name) => {
+export const deleteTask = (id) => {
   return new Promise((resolve, reject) => {
-    pool.query(
-      "DELETE FROM tasks WHERE name = $1",
-      [task_name],
-      (error, res) => {
-        if (error) {
-          reject(error);
-        }
-        if (res && res.rows) {
-          resolve(`Task with the name ${task_name} deleted`);
-        } else {
-          reject(new Error("Unable to delete task"));
-        }
+    pool.query("DELETE FROM tasks WHERE name = $1", [id], (error, res) => {
+      if (error) {
+        reject(error);
       }
-    );
+      if (res && res.rows) {
+        resolve(`Task with the name ${task_name} deleted`);
+      } else {
+        reject(new Error("Unable to delete task"));
+      }
+    });
   });
 };
 
-export const updateTask = (task_status, body) => {
+export const updateTask = (id, body) => {
   return new Promise((resolve, reject) => {
     const { task_name, start_date, deadline } = body;
     pool.query(
       "UPDATE tasks SET task_name = $1, task_status = $2, start_date = $3, deadline = $4",
-      [task_name, task_status, start_date, deadline],
+      [task_name, task_status, start_date, deadline, id],
       (error, res) => {
         if (error) {
           reject(error);
@@ -93,35 +95,6 @@ export const updateTask = (task_status, body) => {
   });
 };
 
-// pool.connect((error, client) => {
-//   if (error) throw error;
-
-//   const taskName = "Build to-do app with NodeJs + Postgresql";
-//   const nameToDelete = "Build task-manager app";
-
-//   client.query(
-//     `INSERT INTO tasks (task_name, task_status, start_date, deadline) VALUES ('${taskName}', 'in progress', '2024-01-10', '2024-12-10') returning *`,
-//     (error, res) => {
-//       if (error) {
-//         console.log("data not inserted.", error);
-//       } else {
-//         console.log("data inserted successfully.");
-//         console.log(res.rows);
-//       }
-//       pool.end;
-//     }
-//   );
-
-//   client.query(
-//     `DELETE FROM tasks WHERE task_name = '${nameToDelete}' RETURNING *`
-//   ),
-//     (error, res) => {
-//       if (error) {
-//         console.log(error);
-//       } else {
-//         console.log("Row deleted!");
-//         console.log(res.rows);
-//       }
-//       pool.end;
-//     };
-// });
+pool.connect((error, client) => {
+  if (error) throw error;
+});
