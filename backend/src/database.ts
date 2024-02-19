@@ -1,8 +1,16 @@
 //CRUD -> create, read, update, delete
-import pkg from "pg";
+import * as pkg from "pg";
 import "dotenv/config";
 
 const { Pool } = pkg;
+
+type Config = {
+  user: string | undefined;
+  host: string | undefined;
+  port: any;
+  password: string | undefined;
+  database: string | undefined;
+};
 
 const userName = process.env.USER_NAME;
 const hostName = process.env.HOST;
@@ -10,7 +18,7 @@ const port = process.env.PORT;
 const password = process.env.PASSWORD;
 const dbName = process.env.DATABASE;
 
-const config = {
+const config: Config = {
   user: userName,
   host: hostName,
   port: port,
@@ -40,7 +48,12 @@ export const getTask = async () => {
   }
 };
 
-export const createTask = (body) => {
+export const createTask = (body: {
+  task_name: any;
+  task_status: any;
+  start_date: any;
+  deadline: any;
+}) => {
   return new Promise((resolve, reject) => {
     const { task_name, task_status, start_date, deadline } = body;
     pool.query(
@@ -60,14 +73,14 @@ export const createTask = (body) => {
   });
 };
 
-export const deleteTask = (id) => {
+export const deleteTask = (id: string) => {
   return new Promise((resolve, reject) => {
     pool.query("DELETE FROM tasks WHERE name = $1", [id], (error, res) => {
       if (error) {
         reject(error);
       }
       if (res && res.rows) {
-        resolve(`Task with the name ${task_name} deleted`);
+        resolve(`Task deleted`);
       } else {
         reject(new Error("Unable to delete task"));
       }
@@ -75,9 +88,17 @@ export const deleteTask = (id) => {
   });
 };
 
-export const updateTask = (id, body) => {
+export const updateTask = (
+  id: string,
+  body: {
+    task_name: string;
+    start_date: any;
+    deadline: any;
+    task_status: string;
+  }
+) => {
   return new Promise((resolve, reject) => {
-    const { task_name, start_date, deadline } = body;
+    const { task_name, start_date, deadline, task_status } = body;
     pool.query(
       "UPDATE tasks SET task_name = $1, task_status = $2, start_date = $3, deadline = $4",
       [task_name, task_status, start_date, deadline, id],

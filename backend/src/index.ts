@@ -1,5 +1,5 @@
-import express, { response } from "express";
-import { getTask, createTask, deleteTask, updateTask } from "./database.js";
+import * as express from "express";
+import { getTask, createTask, deleteTask, updateTask } from "./database";
 
 const app = express();
 const PORT = 3000;
@@ -21,31 +21,31 @@ app.use((req, res, next) => {
 
 app.get("/", (req, res) => {
   getTask()
-    .then((response) => {
+    .then((response: any) => {
       res.status(200).send(response);
     })
-    .catch((error) => {
-      response.status(500).send(error);
+    .catch((error: any) => {
+      express.response.status(500).send(error);
     });
 });
 
 app.post("/tasks", (req, res) => {
   createTask(req.body)
-    .then((response) => {
+    .then((response: any) => {
       res.status(200).send(response);
     })
-    .catch((error) => {
-      response.status(500).send(error);
+    .catch((error: any) => {
+      express.response.status(500).send(error);
     });
 });
 
 app.delete("/tasks/:id", (req, res) => {
   deleteTask(req.params.id)
-    .then((response) => {
+    .then((response: any) => {
       res.status(200).send(response);
     })
-    .catch((error) => {
-      response.status(500).send(error);
+    .catch((error: any) => {
+      express.response.status(500).send(error);
     });
 });
 
@@ -53,10 +53,12 @@ app.put("/tasks/:id", (req, res) => {
   const status = req.params.id;
   const body = req.body;
   updateTask(status, body)
-    .then((response) => {
+    .then((response: any) => {
       res.status(200).send(response);
     })
-    .catch(response.status(500).send(error));
+    .catch((error: any) => {
+      express.response.status(500).send(error);
+    });
 });
 
 app.listen(PORT, () => {
